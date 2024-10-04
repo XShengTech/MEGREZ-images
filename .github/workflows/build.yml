@@ -34,8 +34,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/gpu-manager:ubuntu-22.04
 
-  pytorch-2.1.2_cuda-12.1_python-3.10_ubuntu-22.04:
-    name: Build Custom Image PyTorch 1.10.0 CUDA 11.4 Python 3.9 Ubuntu 22.04
+  pytorch_2_1_2_cuda_12_1_python_3_10_ubuntu_22_04:
+    name: Build PyTorch 2.1.2 CUDA 12.1 Python 3.10 Ubuntu 22.04
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
