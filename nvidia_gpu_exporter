@@ -1,0 +1,94 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          nvidia_gpu_exporter
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Nvidia Gpu Exporter service
+# Description:       Start and stop the Nvidia Gpu Exporter server
+### END INIT INFO
+
+set -e
+
+DESC="Nvidia Gpu Exporter service"
+NAME=nvidia_gpu_exporter
+DAEMON=/usr/bin/nvidia_gpu_exporter
+DAEMON_OPTS=""
+PIDFILE=/run/nvidia_gpu_exporter.pid
+LOGFILE=/var/log/nvidia_gpu_exporter.log
+WORKDIR=/root/
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+. /lib/lsb/init-functions
+
+start_nvidia_gpu_exporter() {
+    cd $WORKDIR
+    nohup $DAEMON $DAEMON_OPTS >> $LOGFILE 2>&1 &
+    echo $! > $PIDFILE
+}
+
+do_start() {
+    log_daemon_msg "Starting $DESC" "$NAME"
+    if [ -f $PIDFILE ]; then
+        PID=$(cat $PIDFILE)
+        if ps -p $PID > /dev/null && grep -q "$DAEMON" /proc/$PID/cmdline; then
+            log_progress_msg "Nvidia Gpu Exporter is already running."
+        else
+            start_nvidia_gpu_exporter
+            log_end_msg 0
+        fi
+    else
+        start_nvidia_gpu_exporter
+        log_end_msg 0
+    fi
+}
+
+do_stop() {
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    if [ -f $PIDFILE ]; then
+        PID=$(cat $PIDFILE)
+        if ps -p $PID > /dev/null && grep -q "$DAEMON" /proc/$PID/cmdline; then
+            kill -9 $PID
+            rm -f $PIDFILE
+            log_end_msg 0
+        else
+            log_end_msg 0
+        fi
+    # else
+    #     log_progress_msg "Nvidia Gpu Exporter is not running."
+    #     log_end_msg 1
+    fi
+}
+
+do_restart() {
+    log_daemon_msg "Restarting $DESC" "$NAME"
+    do_stop
+    sleep 2
+    do_start
+}
+
+do_status() {
+    status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+}
+
+case "$1" in
+  start)
+        do_start
+        ;;
+  stop)
+        do_stop
+        ;;
+  restart|force-reload)
+        do_restart
+        ;;
+  status)
+        do_status
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|force-reload|status}"
+        exit 1
+        ;;
+esac
+
+exit 0
