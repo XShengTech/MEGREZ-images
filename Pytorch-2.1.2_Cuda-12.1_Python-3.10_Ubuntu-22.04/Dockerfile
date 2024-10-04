@@ -1,5 +1,11 @@
 FROM nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
 
+ARG PYTHON_VERSION=3.10.15
+ARG TORCH_VERSION=2.1.2
+ARG TORCHVISION_VERSION=0.16.2
+ARG TORCHAUDIO_VERSION=2.1.2
+ARG CUDA_VERSION=cu121
+
 # 更新软件源，并安装基本工具和依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -45,10 +51,10 @@ RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
 # ENV PATH="/root/miniconda/bin:$PATH"
 RUN source /root/miniconda3/bin/activate && \
     conda init --all && source /root/.bashrc && \
-    conda install -y python=3.10.15
+    conda install -y python=${PYTHON_VERSION}
 
 # 安装 PyTorch
-RUN pip3 install torch==2.1.2+cu121 torchvision==0.16.2+cu121 torchaudio==2.1.2+cu121 --index-url https://download.pytorch.org/whl/cu121
+RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION}
 
 # 安装 Jupyter Notebook
 RUN pip install notebook jupyterlab-language-pack-zh-CN && \
