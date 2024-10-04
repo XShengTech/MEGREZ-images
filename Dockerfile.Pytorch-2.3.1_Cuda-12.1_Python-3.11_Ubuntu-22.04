@@ -17,7 +17,8 @@ RUN apt-get update && \
     openssh-server \
     sudo \
     bzip2 \
-    ca-certificates
+    ca-certificates && \
+    apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root
 WORKDIR /root
@@ -51,15 +52,18 @@ RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
 # ENV PATH="/root/miniconda/bin:$PATH"
 RUN source /root/miniconda3/bin/activate && \
     conda init --all && source /root/.bashrc && \
-    conda install -y python=${PYTHON_VERSION}
+    conda install -y python=${PYTHON_VERSION} && \
+    conda clean -y --all
 
 # 安装 PyTorch
-RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION}
+RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \
+    rm -r ~/.cache/pip/*
 
 # 安装 Jupyter Notebook
 RUN pip install notebook jupyterlab-language-pack-zh-CN && \
     jupyter notebook || true && \
-    jupyter notebook --generate-config
+    jupyter notebook --generate-config && \
+    rm -r ~/.cache/pip/*
 
 
 COPY jupyter_notebook_config.py /root/.jupyter/jupyter_notebook_config.py
@@ -74,7 +78,8 @@ RUN sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && 
 RUN mkdir -p /var/run/sshd
 
 # 安装 Prometheus Node-Exporter
-RUN apt-get install -y prometheus
+RUN apt-get update && apt-get install -y --no-install-recommends prometheus prometheus-node-exporter && \
+    apt-get clean && rm -r /var/lib/apt/lists/*
 COPY prometheus /etc/init.d/prometheus
 COPY prometheus.yml /etc/prometheus/prometheus.yml
 RUN chmod +x /etc/init.d/prometheus
@@ -93,13 +98,14 @@ RUN chmod +x /etc/init.d/nvidia_gpu_exporter
 # 安装 Grafana
 RUN wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - && \
     echo "deb https://packages.grafana.com/oss/deb stable main" | tee -a /etc/apt/sources.list.d/grafana.list && \
-    apt-get update && \
-    apt-get install -y grafana
+    apt-get update && apt-get install -y --no-install-recommends grafana && 
+    apt-get clean && rm -r /var/lib/apt/lists/*
 COPY grafana.db /var/lib/grafana/grafana.db
 
-RUN apt-get clean && rm -r /var/lib/apt/lists/* && \
-    conda clean -y --all && \
-    rm -r ~/.cache/pip/*
+RUN apt-get clean || true && \ 
+    rm -r /var/lib/apt/lists/* || true && \
+    conda clean -y --all || true  && \
+    rm -r ~/.cache/pip/* || true 
 
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
 EXPOSE 8888 22 3000
