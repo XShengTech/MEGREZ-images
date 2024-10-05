@@ -3,7 +3,7 @@ FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
 ARG PYTHON_VERSION=3.8.12
 ARG TORCH_VERSION=1.8.1
 ARG TORCHVISION_VERSION=0.9.1
-ARG TORCHAUDIO_VERSION=1.8.1
+ARG TORCHAUDIO_VERSION=0.8.1
 ARG CUDA_VERSION=cu111
 
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
