@@ -62,7 +62,7 @@ RUN conda install -y python=${PYTHON_VERSION} && \
 RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 安装 PyTorch
-RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \
+RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \
     rm -r ~/.cache/pip/*
 
 # 安装 Jupyter Notebook
