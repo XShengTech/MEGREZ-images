@@ -1,0 +1,119 @@
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+
+ARG PYTHON_VERSION=3.8.12
+ARG TORCH_VERSION=1.8.1
+ARG TORCHVISION_VERSION=0.9.2
+ARG TORCHAUDIO_VERSION=1.8.1
+ARG CUDA_VERSION=cu111
+
+RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+
+# 更新软件源，并安装基本工具和依赖
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    make \
+    wget \
+    curl \
+    openssh-server \
+    sudo \
+    bzip2 \
+    ca-certificates && \
+    apt-get clean && rm -r /var/lib/apt/lists/*
+
+# 设置工作目录为 /root
+WORKDIR /root
+
+SHELL ["/bin/bash", "-c"]
+
+# 安装 Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /root/miniconda3 && \
+    rm Miniconda3-latest-Linux-x86_64.sh
+
+ENV PATH="/root/miniconda3/bin:$PATH"
+
+# 将 conda 初始化命令追加到 /root/.bashrc 中
+RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
+    echo "# !! Contents within this block are managed by 'conda init' !!" >> /root/.bashrc && \
+    echo "__conda_setup=\"\$('/root/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)\"" >> /root/.bashrc && \
+    echo "if [ \$? -eq 0 ]; then" >> /root/.bashrc && \
+    echo "    eval \"\$__conda_setup\"" >> /root/.bashrc && \
+    echo "else" >> /root/.bashrc && \
+    echo "    if [ -f \"/root/miniconda3/etc/profile.d/conda.sh\" ]; then" >> /root/.bashrc && \
+    echo "        . \"/root/miniconda3/etc/profile.d/conda.sh\"" >> /root/.bashrc && \
+    echo "    else" >> /root/.bashrc && \
+    echo "        export PATH=\"/root/miniconda3/bin:\$PATH\"" >> /root/.bashrc && \
+    echo "    fi" >> /root/.bashrc && \
+    echo "fi" >> /root/.bashrc && \
+    echo "unset __conda_setup" >> /root/.bashrc && \
+    echo "# <<< conda initialize <<<" >> /root/.bashrc
+
+# 配置 conda 环境
+# ENV PATH="/root/miniconda/bin:$PATH"
+RUN source /root/miniconda3/bin/activate && \
+    conda init --all && \ 
+    source /root/.bashrc
+COPY .condarc /root/.condarc
+RUN conda install -y python=${PYTHON_VERSION} && \
+    conda clean -y --all
+
+RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
+
+# 安装 PyTorch
+RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \
+    rm -r ~/.cache/pip/*
+
+# 安装 Jupyter Notebook
+RUN pip install notebook jupyterlab-language-pack-zh-CN && \
+    jupyter notebook || true && \
+    jupyter notebook --generate-config && \
+    rm -r ~/.cache/pip/*
+
+COPY jupyter_notebook_config.py /root/.jupyter/jupyter_notebook_config.py
+COPY jupyter /etc/init.d/jupyter
+RUN chmod +x /etc/init.d/jupyter
+
+# 配置 SSH 允许 root 登录和密码认证
+RUN sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/^#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# 创建 SSH 运行时目录
+RUN mkdir -p /var/run/sshd
+
+# 安装 Prometheus Node-Exporter
+RUN apt-get update && apt-get install -y --no-install-recommends prometheus prometheus-node-exporter && \
+    apt-get clean && rm -r /var/lib/apt/lists/*
+COPY prometheus /etc/init.d/prometheus
+COPY prometheus.yml /etc/prometheus/prometheus.yml
+RUN chmod +x /etc/init.d/prometheus
+
+COPY prometheus-node-exporter /etc/init.d/prometheus-node-exporter
+RUN chmod +x /etc/init.d/prometheus-node-exporter
+
+# 安装 Nvidia-Gpu-Exporter
+RUN wget https://github.com/utkuozdemir/nvidia_gpu_exporter/releases/download/v1.2.1/nvidia_gpu_exporter_1.2.1_linux_x86_64.tar.gz -O nvidia_gpu_exporter_1.2.1_linux_x86_64.tar.gz && \
+    tar -zxvf nvidia_gpu_exporter_1.2.1_linux_x86_64.tar.gz && \
+    mv nvidia_gpu_exporter /usr/bin/ && \
+    rm nvidia_gpu_exporter_1.2.1_linux_x86_64.tar.gz LICENSE
+COPY nvidia_gpu_exporter /etc/init.d/nvidia_gpu_exporter
+RUN chmod +x /etc/init.d/nvidia_gpu_exporter
+
+# 安装 Grafana
+RUN wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - && \
+    echo "deb https://packages.grafana.com/oss/deb stable main" | tee -a /etc/apt/sources.list.d/grafana.list && \
+    apt-get update && apt-get install -y --no-install-recommends grafana && \
+    apt-get clean && rm -r /var/lib/apt/lists/*
+COPY grafana.db /var/lib/grafana/grafana.db
+
+RUN apt-get clean || true && \ 
+    rm -r /var/lib/apt/lists/* || true && \
+    conda clean -y --all || true  && \
+    rm -r ~/.cache/pip/* || true 
+
+# 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
+EXPOSE 8888 22 3000
+
+# 修改启动脚本
+RUN sed -i ':a;$!{N;ba}; s|\necho\n|\necho\nservice ssh start\nservice jupyter start\nservice prometheus start\nservice prometheus-node-exporter start\nservice nvidia_gpu_exporter start\nservice grafana-server start|' /opt/nvidia/nvidia_entrypoint.sh
