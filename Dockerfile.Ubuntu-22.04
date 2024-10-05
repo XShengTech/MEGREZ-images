@@ -1,6 +1,8 @@
 # 使用 Ubuntu 22.04 作为基础镜像
 FROM ubuntu:22.04
 
+COPY sources.list /etc/apt/sources.list
+
 # 更新软件源，并安装基本工具和依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -50,6 +52,9 @@ RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
 RUN source /root/miniconda3/bin/activate && \ 
     conda init --all && \
     source /root/.bashrc
+COPY .condarc /root/.condarc
+
+RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 安装 Jupyter Notebook
 RUN pip install notebook jupyterlab-language-pack-zh-CN && \
@@ -100,11 +105,6 @@ RUN apt-get clean || true && \
 
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
 EXPOSE 8888 22 3000
-
-# 换源
-COPY sources.list /etc/apt/sources.list
-COPY .condarc /root/.condarc
-RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 复制入口脚本
 COPY Ubuntu-22.04/entrypoint.sh /opt/entrypoint.sh
