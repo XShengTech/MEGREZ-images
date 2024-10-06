@@ -19,7 +19,8 @@ RUN apt-get update && \
     openssh-server \
     sudo \
     bzip2 \
-    ca-certificates && \
+    ca-certificates \
+    git && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root

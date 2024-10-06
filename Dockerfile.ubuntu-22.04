@@ -16,7 +16,8 @@ RUN apt-get update && \
     bzip2 \
     ca-certificates \
     gnupg \
-    gnupg2 && \
+    gnupg2 \
+    git && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root
