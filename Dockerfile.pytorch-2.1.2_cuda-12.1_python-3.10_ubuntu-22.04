@@ -33,7 +33,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     bash Miniconda3-latest-Linux-x86_64.sh -b -p /root/miniconda3 && \
     rm Miniconda3-latest-Linux-x86_64.sh
 
-ENV PATH="/root/miniconda3/bin:/usr/local/cuda/bin:$PATH"
+ENV PATH="/root/miniconda3/bin:$PATH"
 
 # 将 conda 初始化命令追加到 /root/.bashrc 中
 RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
@@ -59,6 +59,8 @@ RUN source /root/miniconda3/bin/activate && \
 COPY .condarc /root/.condarc
 RUN conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
+
+ENV PATH="/usr/local/cuda/bin:$PATH"
 
 RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
