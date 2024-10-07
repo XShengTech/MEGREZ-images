@@ -6,8 +6,6 @@ ARG TORCHVISION_VERSION=0.19.0
 ARG TORCHAUDIO_VERSION=2.4.0
 ARG CUDA_VERSION=cu121
 
-COPY sources.list /etc/apt/sources.list
-
 # 更新软件源，并安装基本工具和依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -56,13 +54,10 @@ RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
 RUN source /root/miniconda3/bin/activate && \
     conda init --all && \ 
     source /root/.bashrc
-COPY .condarc /root/.condarc
 RUN conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
 
 ENV PATH="/usr/local/cuda/bin:$PATH"
-
-RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 安装 PyTorch
 RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \
@@ -117,6 +112,11 @@ RUN apt-get clean || true && \
 
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
 EXPOSE 8888 22 3000
+
+# 换源
+RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+COPY .condarc /root/.condarc
+RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 修改启动脚本
 RUN sed -i ':a;$!{N;ba}; s|\necho\n|\necho\nservice ssh start\nservice jupyter start\nservice prometheus start\nservice prometheus-node-exporter start\nservice nvidia_gpu_exporter start\nservice grafana-server start|' /opt/nvidia/nvidia_entrypoint.sh
