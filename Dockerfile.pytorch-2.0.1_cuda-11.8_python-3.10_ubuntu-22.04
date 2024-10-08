@@ -32,24 +32,6 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     bash Miniconda3-latest-Linux-x86_64.sh -b -p /root/miniconda3 && \
     rm Miniconda3-latest-Linux-x86_64.sh
 
-ENV PATH="/root/miniconda3/bin:$PATH"
-
-# 将 conda 初始化命令追加到 /root/.bashrc 中
-RUN echo "# >>> conda initialize >>>" >> /root/.bashrc && \
-    echo "# !! Contents within this block are managed by 'conda init' !!" >> /root/.bashrc && \
-    echo "__conda_setup=\"\$('/root/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)\"" >> /root/.bashrc && \
-    echo "if [ \$? -eq 0 ]; then" >> /root/.bashrc && \
-    echo "    eval \"\$__conda_setup\"" >> /root/.bashrc && \
-    echo "else" >> /root/.bashrc && \
-    echo "    if [ -f \"/root/miniconda3/etc/profile.d/conda.sh\" ]; then" >> /root/.bashrc && \
-    echo "        . \"/root/miniconda3/etc/profile.d/conda.sh\"" >> /root/.bashrc && \
-    echo "    else" >> /root/.bashrc && \
-    echo "        export PATH=\"/root/miniconda3/bin:\$PATH\"" >> /root/.bashrc && \
-    echo "    fi" >> /root/.bashrc && \
-    echo "fi" >> /root/.bashrc && \
-    echo "unset __conda_setup" >> /root/.bashrc && \
-    echo "# <<< conda initialize <<<" >> /root/.bashrc
-
 # 配置 conda 环境
 # ENV PATH="/root/miniconda/bin:$PATH"
 RUN source /root/miniconda3/bin/activate && \
@@ -57,8 +39,6 @@ RUN source /root/miniconda3/bin/activate && \
     source /root/.bashrc
 RUN conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
-
-ENV PATH="/usr/local/cuda/bin:$PATH"
 
 # 安装 PyTorch
 RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \
