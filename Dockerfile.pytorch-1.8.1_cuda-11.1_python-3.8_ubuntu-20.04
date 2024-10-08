@@ -18,7 +18,8 @@ RUN apt-get update && \
     sudo \
     bzip2 \
     ca-certificates \
-    git && \
+    git \
+    vim && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root

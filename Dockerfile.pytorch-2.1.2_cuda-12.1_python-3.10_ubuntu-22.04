@@ -18,7 +18,8 @@ RUN apt-get update && \
     sudo \
     bzip2 \
     ca-certificates \
-    git && \
+    git \
+    vim && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root
@@ -57,7 +58,7 @@ RUN source /root/miniconda3/bin/activate && \
 RUN conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
 
-ENV PATH="/usr/local/cuda/bin:$PATH"
+ENV PATH="/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}"
 
 # 安装 PyTorch
 RUN pip3 install torch==${TORCH_VERSION}+${CUDA_VERSION} torchvision==${TORCHVISION_VERSION}+${CUDA_VERSION} torchaudio==${TORCHAUDIO_VERSION}+${CUDA_VERSION} --index-url https://download.pytorch.org/whl/${CUDA_VERSION} && \

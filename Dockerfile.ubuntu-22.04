@@ -15,7 +15,8 @@ RUN apt-get update && \
     ca-certificates \
     gnupg \
     gnupg2 \
-    git && \
+    git \
+    vim && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root
