@@ -33,10 +33,11 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     rm Miniconda3-latest-Linux-x86_64.sh
 
 # 配置 conda 环境
-# ENV PATH="/root/miniconda/bin:$PATH"
+ENV PATH=/root/miniconda3/bin:$PATH
 RUN source /root/miniconda3/bin/activate && \
     conda init --all && \ 
-    source /root/.bashrc
+    source /root/.bashrc && \
+    conda activate
 RUN conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
 
