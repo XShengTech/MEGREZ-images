@@ -16,7 +16,9 @@ RUN apt-get update && \
     gnupg \
     gnupg2 \
     git \
-    vim && \
+    vim \
+    libgl1 libsm6 libxext6 libglib2.0-0 \
+    language-pack-en language-pack-zh* && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root
