@@ -78,7 +78,7 @@ RUN wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - && \
     apt-get update && apt-get install -y --no-install-recommends grafana && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 COPY grafana.db /var/lib/grafana/grafana.db
-RUN chmod grafana:grafana /var/lib/grafana/grafana.db
+RUN chown grafana:grafana /var/lib/grafana/grafana.db
 
 RUN apt-get clean || true && \ 
     rm -r /var/lib/apt/lists/* || true && \
