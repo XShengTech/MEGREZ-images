@@ -104,4 +104,4 @@ COPY .condarc /root/.condarc
 RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 修改启动脚本
-RUN sed -i ':a;$!{N;ba}; s|\necho\n|\necho\nservice ssh start\nservice jupyter start\nservice prometheus start\nservice prometheus-node-exporter start\nservice nvidia_gpu_exporter start\nservice grafana-server start|' /opt/nvidia/nvidia_entrypoint.sh
+RUN sed -i ':a;$!{N;ba}; s|\necho\n|\necho\nrm -r /var/lib/prometheus/metrics2/*\nservice ssh start\nservice jupyter start\nservice prometheus start\nservice prometheus-node-exporter start\nservice nvidia_gpu_exporter start\nservice grafana-server start|' /opt/nvidia/nvidia_entrypoint.sh
