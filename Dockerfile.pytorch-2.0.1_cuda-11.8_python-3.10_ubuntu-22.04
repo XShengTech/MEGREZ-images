@@ -6,6 +6,8 @@ ARG TORCHVISION_VERSION=0.15.2
 ARG TORCHAUDIO_VERSION=2.0.2
 ARG CUDA_VERSION=cu118
 
+ENV LANG C.UTF-8
+
 # 更新软件源，并安装基本工具和依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -21,7 +23,8 @@ RUN apt-get update && \
     git \
     vim \
     libgl1 libsm6 libxext6 libglib2.0-0 \
-    language-pack-en language-pack-zh* && \
+    language-pack-en language-pack-zh* \
+    screen tmux unzip && \
     apt-get clean && rm -r /var/lib/apt/lists/*
 
 # 设置工作目录为 /root
