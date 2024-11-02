@@ -100,6 +100,8 @@ RUN apt-get clean || true && \
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
 EXPOSE 8888 22 3000
 
+RUN echo 'export PATH="/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH"\nexport LANG="C.UTF-8"' >> /root/.bashrc
+
 # 换源
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 COPY .condarc /root/.condarc
