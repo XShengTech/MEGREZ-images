@@ -1,7 +1,7 @@
 # 使用 Ubuntu 22.04 作为基础镜像
 FROM ubuntu:22.04
 
-ENV LANG C.UTF-8
+ENV LANG=C.UTF-8
 
 # 更新软件源，并安装基本工具和依赖
 RUN apt-get update && \
