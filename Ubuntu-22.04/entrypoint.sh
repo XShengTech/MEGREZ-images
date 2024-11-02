@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -r /var/lib/prometheus/metrics2/*
+ulimit -n 64000
 
 service ssh start
 service jupyter start
