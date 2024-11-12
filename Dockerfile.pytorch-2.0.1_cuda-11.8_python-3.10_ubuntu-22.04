@@ -102,6 +102,10 @@ EXPOSE 8888 22 3000
 
 RUN echo 'export PATH="/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH"\nexport LANG="C.UTF-8"' >> /root/.bashrc
 
+# 设置 MOTD
+COPY 10-help-text /etc/update-motd.d/10-help-text
+RUN chmod +x /etc/update-motd.d/10-help-text
+
 # 换源
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 COPY .condarc /root/.condarc

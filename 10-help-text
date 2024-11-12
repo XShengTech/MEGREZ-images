@@ -1,0 +1,25 @@
+#!/bin/sh
+
+echo ""
+echo " __  __    _    ____ _       _   _ ____   ____ "
+echo "|  \/  |  / \  / ___| |     | | | |  _ \ / ___|"
+echo "| |\/| | / _ \| |   | |     | |_| | |_) | |    "
+echo "| |  | |/ ___ \ |___| |___  |  _  |  __/| |___ "
+echo "|_|  |_/_/   \_\____|_____| |_| |_|_|    \____|"
+echo ""
+
+system_disk_total=$(df -h | grep overlay | awk '{print $2}')
+system_disk_used=$(df -h | grep overlay | awk '{print $3}')
+system_disk_percent=$(df -h | grep overlay | awk '{print $5}')
+
+data_disk_total=$(df -h | grep /root/maclab-tmp | awk '{print $2}')
+data_disk_used=$(df -h | grep /root/maclab-tmp | awk '{print $3}')
+data_disk_percent=$(df -h | grep /root/maclab-tmp | awk '{print $5}')
+
+echo "╔══════════════════╦══════════╦══════╦══════════════════╦═══════════════╦═══════════════════════════════════════════════════╗"
+echo "║ 目录             ║ 名称     ║ 速度 ║  已 用 / 总 量   ║    使用率     ║ 说明                                              ║"
+echo "╠══════════════════╬══════════╬══════╬══════════════════╬═══════════════╬═══════════════════════════════════════════════════╣"
+echo "║ /                ║ 系 统 盘 ║  快  ║	$system_disk_used / $system_disk_total	║	$system_disk_percent	║ 实例关机数据不会丢失，可存放代码等。              ║"
+echo "║ /root/maclab-tmp ║ 数 据 盘 ║  快  ║	$data_disk_used / $data_disk_total	║	$data_disk_percent	║ 实例关机数据不会丢失，可存放读写IO要求高的数据。  ║"
+echo "║ /root/maclab-pub ║ 公 共 盘 ║  慢  ║			║		║ 删除实例数据不会丢失，但数据所有人都可以访问。    ║"
+echo "╚══════════════════╩══════════╩══════╩══════════════════╩═══════════════╩═══════════════════════════════════════════════════╝"
