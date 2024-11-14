@@ -19,10 +19,10 @@ fi
 
 DESC="Prometheus exporter for machine metrics"
 NAME=prometheus-node-exporter
-USER=prometheus
+USER=root
 GROUP=$USER
 DAEMON=/usr/bin/$NAME
-DAEMON_OPTS="--web.listen-address=localhost:9100"
+DAEMON_OPTS="--web.listen-address=localhost:9100 --collector.filesystem.ignored-fs-types=^(tmpfs|autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)"
 PIDFILE=/run/prometheus/$NAME.pid
 LOGFILE=/var/log/prometheus/$NAME.log
 
