@@ -39,6 +39,7 @@ ENV PATH=/root/miniconda3/bin:$PATH
 RUN source /root/miniconda3/bin/activate && \ 
     conda init --all && \
     source /root/.bashrc
+RUN conda remove -y --name base conda-anaconda-telemetry
 
 # 安装 Jupyter Notebook
 RUN pip install notebook jupyterlab-language-pack-zh-CN && \

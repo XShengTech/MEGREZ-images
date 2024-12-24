@@ -42,7 +42,8 @@ ENV PATH=/root/miniconda3/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH
 RUN source /root/miniconda3/bin/activate && \
     conda init --all && \ 
     source /root/.bashrc
-RUN conda install -y python=${PYTHON_VERSION} && \
+RUN conda remove -y --name base conda-anaconda-telemetry && \
+    conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
 
 # 安装 PyTorch
