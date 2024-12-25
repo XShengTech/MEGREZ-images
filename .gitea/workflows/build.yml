@@ -39,7 +39,7 @@ jobs:
           file: Dockerfile.${{ gitea.ref_name }}
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/gpu-manager:${{ gitea.ref_name }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:${{ gitea.ref_name }}
           # build-args: |
           #   HTTP_PROXY=http://172.17.0.1:10809
           #   HTTPS_PROXY=http://172.17.0.1:10809
