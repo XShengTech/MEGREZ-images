@@ -58,6 +58,12 @@ RUN sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && 
 # 创建 SSH 运行时目录
 RUN mkdir -p /var/run/sshd
 
+# 安装 code-server
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+COPY code-server.yaml /root/.config/code-server/config.yaml
+COPY code-server /etc/init.d/code-server
+RUN chmod +x /etc/init.d/code-server
+
 # 安装 Prometheus Node-Exporter
 RUN apt-get update && apt-get install -y --no-install-recommends prometheus prometheus-node-exporter && \
     apt-get clean && rm -r /var/lib/apt/lists/*
@@ -87,10 +93,11 @@ RUN chown grafana:grafana /var/lib/grafana/grafana.db
 RUN apt-get clean || true && \ 
     rm -r /var/lib/apt/lists/* || true && \
     conda clean -y --all || true  && \
-    rm -r ~/.cache/pip/* || true 
+    rm -r ~/.cache/pip/* || true && \
+    rm -r ~/.cache/code-server/* || true
 
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
-EXPOSE 8888 22 3000
+EXPOSE 8888 22 3000 8080
 
 RUN echo -e 'export LANG="C.UTF-8"\n/etc/update-motd.d/10-help-text' >> /root/.bashrc
 

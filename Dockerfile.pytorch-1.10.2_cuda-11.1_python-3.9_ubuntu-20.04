@@ -67,6 +67,12 @@ RUN sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && 
 # 创建 SSH 运行时目录
 RUN mkdir -p /var/run/sshd
 
+# 安装 code-server
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+COPY code-server.yaml /root/.config/code-server/config.yaml
+COPY code-server /etc/init.d/code-server
+RUN chmod +x /etc/init.d/code-server
+
 # 安装 Prometheus Node-Exporter
 RUN apt-get update && apt-get install -y --no-install-recommends prometheus prometheus-node-exporter && \
     apt-get clean && rm -r /var/lib/apt/lists/*
@@ -96,10 +102,11 @@ RUN chown grafana:grafana /var/lib/grafana/grafana.db
 RUN apt-get clean || true && \ 
     rm -r /var/lib/apt/lists/* || true && \
     conda clean -y --all || true  && \
-    rm -r ~/.cache/pip/* || true 
+    rm -r ~/.cache/pip/* || true && \
+    rm -r ~/.cache/code-server/* || true
 
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
-EXPOSE 8888 22 3000
+EXPOSE 8888 22 3000 8080
 
 RUN echo -e 'export PATH="/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH"\nexport LANG="C.UTF-8"\n/etc/update-motd.d/10-help-text' >> /root/.bashrc
 
@@ -113,4 +120,4 @@ COPY .condarc /root/.condarc
 RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 修改启动脚本
-RUN sed -i ':a;$!{N;ba}; s|\necho\n|\necho\nrm -r /var/lib/prometheus/metrics2/*\nulimit -n 64000\nservice ssh start\nservice jupyter start\nservice prometheus start\nservice prometheus-node-exporter start\nservice nvidia_gpu_exporter start\nservice grafana-server start|' /opt/nvidia/nvidia_entrypoint.sh
+RUN sed -i ':a;$!{N;ba}; s|\necho\n|\necho\nrm -r /var/lib/prometheus/metrics2/*\nulimit -n 64000\nservice ssh start\nservice jupyter start\nservice code-server start\nservice prometheus start\nservice prometheus-node-exporter start\nservice nvidia_gpu_exporter start\nservice grafana-server start|' /opt/nvidia/nvidia_entrypoint.sh

@@ -10,6 +10,7 @@ service prometheus start
 service prometheus-node-exporter start
 service nvidia_gpu_exporter start
 service grafana-server start
+service code-server start
 
 tail -f /dev/null
 
