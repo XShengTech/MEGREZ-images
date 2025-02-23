@@ -455,7 +455,7 @@ c = get_config()  #noqa
 
 ## The default URL to redirect to from `/`
 #  Default: '/tree'
-# c.JupyterNotebookApp.default_url = '/tree'
+c.JupyterNotebookApp.default_url = '/lab'
 
 ## Whether to expose the global app instance to browser via window.jupyterapp
 #  Default: False
@@ -618,7 +618,7 @@ c.JupyterNotebookApp.open_browser = False
 #  
 #          Takes precedence over allow_origin_pat.
 #  Default: ''
-# c.ServerApp.allow_origin = ''
+c.ServerApp.allow_origin = '*'
 
 ## Use a regular expression for the Access-Control-Allow-Origin header
 #  
@@ -693,7 +693,7 @@ c.ServerApp.allow_root = True
 #                         Leading and trailing slashes can be omitted,
 #                         and will automatically be added.
 #  Default: '/'
-# c.ServerApp.base_url = '/'
+c.ServerApp.base_url = '/jupyter'
 
 ## Specify what command to use to invoke a web
 #                        browser when starting the server. If not specified, the

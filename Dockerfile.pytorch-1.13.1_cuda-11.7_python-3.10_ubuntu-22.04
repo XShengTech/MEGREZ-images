@@ -94,10 +94,16 @@ RUN chmod +x /etc/init.d/nvidia_gpu_exporter
 # 安装 Grafana
 RUN wget -q -O - https://packages.grafana.com/gpg.key | apt-key add - && \
     echo "deb https://packages.grafana.com/oss/deb stable main" | tee -a /etc/apt/sources.list.d/grafana.list && \
-    apt-get update && apt-get install -y --no-install-recommends grafana && \
-    apt-get clean && rm -r /var/lib/apt/lists/*
+    apt-get update && apt-get install -y --no-install-recommends grafana
 COPY grafana.db /var/lib/grafana/grafana.db
 RUN chown grafana:grafana /var/lib/grafana/grafana.db
+RUN sed -i 's|;root_url = %(protocol)s://%(domain)s:%(http_port)s/|root_url = /monitor/|' /etc/grafana/grafana.ini && \
+    sed -i 's|;serve_from_sub_path = false|serve_from_sub_path = true|' /etc/grafana/grafana.ini
+
+# 安装 Nginx
+RUN apt-get update && apt-get install -y --no-install-recommends nginx && \
+    rm /etc/nginx/sites-enabled/default
+COPY megrez.conf /etc/nginx/sites-enabled/megrez.conf
 
 RUN apt-get clean || true && \ 
     rm -r /var/lib/apt/lists/* || true && \
