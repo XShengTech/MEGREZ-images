@@ -102,7 +102,8 @@ RUN sed -i 's|;root_url = %(protocol)s://%(domain)s:%(http_port)s/|root_url = /m
     sed -i 's|;serve_from_sub_path = false|serve_from_sub_path = true|' /etc/grafana/grafana.ini
 
 # 安装 Nginx
-RUN apt-get update && apt-get install -y --no-install-recommends nginx && \
+RUN export DEBIAN_FRONTEND="noninteractive" && \
+    apt-get update && apt-get install -y --no-install-recommends nginx && \
     rm /etc/nginx/sites-enabled/default
 COPY megrez.conf /etc/nginx/sites-enabled/megrez.conf
 
