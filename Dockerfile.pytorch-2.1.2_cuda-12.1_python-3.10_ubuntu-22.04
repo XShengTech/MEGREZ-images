@@ -69,7 +69,7 @@ RUN sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && 
 RUN mkdir -p /var/run/sshd
 
 # 安装 code-server
-RUN curl -fsSL https://code-server.dev/install.sh | sh -s -- --version 4.96.4
+RUN curl -fsSL https://code-server.dev/install.sh | sh
 COPY code-server.yaml /root/.config/code-server/config.yaml
 COPY code-server /etc/init.d/code-server
 RUN chmod +x /etc/init.d/code-server
