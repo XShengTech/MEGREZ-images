@@ -115,7 +115,7 @@ RUN apt-get clean || true && \
 # 暴露 Jupyter Notebook 的默认端口 8888 和 SSH 默认端口 22
 EXPOSE 8888 22 3000 8080 80
 
-RUN echo -e 'export PATH="/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH"\nexport LANG="C.UTF-8"\nexport HOME=/root\n/etc/update-motd.d/10-help-text' >> /root/.bashrc
+RUN echo -e 'export PATH="/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH"\nexport LANG="C.UTF-8"\nexport HOME=/root\nexport SHELL=/bin/bash\n/etc/update-motd.d/10-help-text' >> /root/.bashrc
 
 # 设置 MOTD
 COPY 10-help-text /etc/update-motd.d/10-help-text

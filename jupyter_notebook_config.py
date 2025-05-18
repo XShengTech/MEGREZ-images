@@ -1024,7 +1024,7 @@ c.ServerApp.ip = '0.0.0.0'
 
 ## Supply overrides for terminado. Currently only supports "shell_command".
 #  Default: {}
-# c.ServerApp.terminado_settings = {}
+c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash"] }
 
 ## Set to False to disable terminals.
 #  
