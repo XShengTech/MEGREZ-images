@@ -40,7 +40,7 @@ RUN source /root/miniconda3/bin/activate && \
     conda init --all && \
     source /root/.bashrc
 RUN conda tos accept && \
-    conda remove -y --name base conda-anaconda-telemetry conda-anaconda-tos 
+    conda remove -y --name base conda-anaconda-telemetry conda-anaconda-tos anaconda-auth
 
 # 安装 Jupyter Notebook
 RUN pip install notebook jupyterlab-language-pack-zh-CN && \

@@ -44,7 +44,7 @@ RUN source /root/miniconda3/bin/activate && \
     source /root/.bashrc && \
     conda activate
 RUN conda tos accept && \
-    conda remove -y --name base conda-anaconda-telemetry conda-anaconda-tos  && \
+    conda remove -y --name base conda-anaconda-telemetry conda-anaconda-tos anaconda-auth && \
     conda install -y python=${PYTHON_VERSION} && \
     conda clean -y --all
 
