@@ -86,10 +86,10 @@ COPY prometheus-node-exporter /etc/init.d/prometheus-node-exporter
 RUN chmod +x /etc/init.d/prometheus-node-exporter
 
 # 安装 Nvidia-Gpu-Exporter
-RUN wget https://github.com/utkuozdemir/nvidia_gpu_exporter/releases/download/v1.3.2/nvidia_gpu_exporter_1.3.2_linux_x86_64.tar.gz -O nvidia_gpu_exporter_1.3.2_linux_x86_64.tar.gz && \
-    tar -zxvf nvidia_gpu_exporter_1.3.2_linux_x86_64.tar.gz && \
+RUN wget https://github.com/utkuozdemir/nvidia_gpu_exporter/releases/download/v1.4.1/nvidia_gpu_exporter_1.4.1_linux_x86_64.tar.gz -O nvidia_gpu_exporter_1.4.1_linux_x86_64.tar.gz && \
+    tar -zxvf nvidia_gpu_exporter_1.4.1_linux_x86_64.tar.gz && \
     mv nvidia_gpu_exporter /usr/bin/ && \
-    rm nvidia_gpu_exporter_1.3.2_linux_x86_64.tar.gz LICENSE
+    rm nvidia_gpu_exporter_1.4.1_linux_x86_64.tar.gz LICENSE
 COPY nvidia_gpu_exporter /etc/init.d/nvidia_gpu_exporter
 RUN chmod +x /etc/init.d/nvidia_gpu_exporter
 
