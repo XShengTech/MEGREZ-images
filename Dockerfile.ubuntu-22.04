@@ -116,7 +116,8 @@ RUN chmod +x /etc/update-motd.d/10-help-text
 # 换源
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 COPY .condarc /root/.condarc
-RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
+RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/ && \
+    pip config set global.extra-index-url "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 # 复制入口脚本
 COPY Ubuntu-22.04/entrypoint.sh /opt/entrypoint.sh
