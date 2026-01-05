@@ -22,6 +22,7 @@
 | pytorch-2.4.0_cuda-12.1_python-3.12_ubuntu-22.04 | 2.4.0 | 12.1 | 3.12 | 22.04 |
 | pytorch-2.6.0_cuda-12.6_python-3.12_ubuntu-22.04 | 2.6.0 | 12.6 | 3.12 | 22.04 |
 | pytorch-2.8.0_cuda-12.8_python-3.12_ubuntu-22.04 | 2.8.0 | 12.8 | 3.12 | 22.04 |
+| pytorch-2.9.1_cuda-12.9_python-3.13_ubuntu-22.04 | 2.9.1 | 12.9 | 3.13 | 22.04 |
 
 ### TensorFlow
 
